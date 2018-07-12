@@ -3,14 +3,26 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import { App } from './components';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
+import rootReducer from './reducers';
 // needed dependancies
+
 // applyMiddleware from redux
 // thunk from redux-thunk
 // logger from redux-logger
 // rootReducer from ./reducers
+const logger = store => next => action => {
+  console.group('ACTION', action);
+  console.log('PREVIOUS_STATE: ', store.getState());
 
-const store = createStore(/* rootReducer */, /* applyMiddleware goes here */);
+  const result = next(action);
+  console.log('NEW_STATE', store.getState());
+  console.groupEnd();
+
+  return result;
+};
+const store = createStore(rootReducer, applyMiddleware(thunk, logger));
 
 ReactDOM.render(
   <Provider store={store}>
